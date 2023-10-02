@@ -1,22 +1,23 @@
 import cors from 'cors';
 import dotenv from 'dotenv';
 import express from 'express';
-import errorHandler from '../middlewares/errorHandler.js';
+import dbConnection from '../dbConfig/dbConnection.js';
+import authRoute from '../routes/authRoute.js';
 
 // dotenv configuration
 dotenv.config();
 
-const PORT = process.env.PORT;
+const PORT = process.env.PORT || 3000;
 const HOST_NAME = process.env.HOST_NAME;
 
 // database connection
+dbConnection();
 
 // app instance
 const app = express();
 
 // body-parser
 app.use(express.json({ limit: '50mb' }));
-app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
 // cors policy
@@ -28,12 +29,8 @@ app.use(
 );
 
 //  routes
-app.get('/api/v1/auth', (req, res) => {
-  res.send('Test');
-});
-
-// custom error handler
-app.use(errorHandler);
+app.use('/api/v1/auth', authRoute);
+app.use('/api/v1/auth', authRoute);
 
 // error handler
 app.use((err, req, res, next) => {
