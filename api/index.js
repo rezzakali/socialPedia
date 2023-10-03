@@ -2,7 +2,9 @@ import cors from 'cors';
 import dotenv from 'dotenv';
 import express from 'express';
 import dbConnection from '../dbConfig/dbConnection.js';
-import authRoute from '../routes/authRoute.js';
+import authRoutes from '../routes/authRoutes.js';
+import postRoutes from '../routes/postRoutes.js';
+import userRoutes from '../routes/userRoutes.js';
 
 // dotenv configuration
 dotenv.config();
@@ -29,8 +31,9 @@ app.use(
 );
 
 //  routes
-app.use('/api/v1/auth', authRoute);
-app.use('/api/v1/auth', authRoute);
+app.use('/api/v1/auth', authRoutes);
+app.use('/api/v1/users', userRoutes);
+app.use('/api/v1/posts', postRoutes);
 
 // error handler
 app.use((err, req, res, next) => {

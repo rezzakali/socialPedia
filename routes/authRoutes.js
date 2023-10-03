@@ -4,6 +4,7 @@ import {
   registerController,
 } from '../controllers/authController.js';
 
+// router instance
 const router = Router();
 
 // sing up
