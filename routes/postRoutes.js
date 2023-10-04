@@ -1,7 +1,7 @@
 import { Router } from 'express';
 import {
   createPost,
-  getPosts,
+  getFeedPosts,
   getUserPosts,
   likePost,
 } from '../controllers/postController.js';
@@ -11,15 +11,15 @@ import verifyToken from '../middlewares/authMiddleware.js';
 const router = Router();
 
 // ############## GET POSTS ##############
-router.get('/', verifyToken, getPosts);
+router.get('/', verifyToken, getFeedPosts);
 
 // ############## GET POST ################
-router.get('/:userId/posts', verifyToken, getUserPosts);
+router.get('/:userId', verifyToken, getUserPosts);
 
 // ########### CREATE POST ############
-router.post('/create', verifyToken, createPost);
+router.post('/create-post', verifyToken, createPost);
 
 //  ############# LIKE A POST ################
-router.patch('/:id/like', verifyToken, likePost);
+router.patch('/:postId/like', verifyToken, likePost);
 
 export default router;
