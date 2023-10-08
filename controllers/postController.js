@@ -54,8 +54,8 @@ export const createPost = [
       // finally save the newPost to database
       await newPost.save();
 
-      // find all posts from post collection
-      const posts = await Post.find({});
+      // Find all posts from the post collection and sort them by the most recent first
+      const posts = await Post.find({}).sort({ createdAt: -1 });
 
       // finally return response with the posts
       return res.status(201).json({ status: true, posts });
@@ -70,9 +70,9 @@ export const createPost = [
 ];
 
 // ################## GET POSTS #################
-export const getFeedPosts = async (req, res) => {
+export const getPosts = async (req, res) => {
   try {
-    const posts = await Post.find({});
+    const posts = await Post.find({}).sort({ createdAt: -1 });
     return res.status(200).json({
       success: true,
       posts,

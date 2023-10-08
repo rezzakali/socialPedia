@@ -76,29 +76,12 @@ export const registerController = [
         profileImage: cloudinaryResponse ? cloudinaryResponse.secure_url : null,
       });
 
-      // Generate a token for the newly created user
-      const token = jwt.sign({ _id: newUser._id }, process.env.JWT_SECRET, {
-        expiresIn: process.env.JWT_EXPIRE_IN, // 30 days
-      });
-
       await newUser.save();
-
-      // Set the token as a cookie in the response
-      const options = {
-        expires: new Date(
-          Date.now() + process.env.JWT_COOKIE_EXPIRE * 24 * 60 * 60 * 1000
-        ),
-        httpOnly: true,
-        secure: false, // Set to true if using HTTPS
-      };
-
-      res.cookie('token', token, options);
 
       // send response
       res.status(201).json({
         success: true,
         message: 'User registered successfully!',
-        token,
       });
       next();
     } catch (error) {
@@ -110,6 +93,7 @@ export const registerController = [
   },
 ];
 
+// login
 export const loginController = [
   body('email').isEmail().withMessage('Invalid email address!'),
   body('password')
@@ -153,22 +137,12 @@ export const loginController = [
         expiresIn: process.env.JWT_EXPIRE_IN, // 30 days
       });
 
-      // Set the token as a cookie in the response
-      const options = {
-        expires: new Date(
-          Date.now() + process.env.JWT_COOKIE_EXPIRE * 24 * 60 * 60 * 1000
-        ),
-        httpOnly: true,
-        secure: false, // Set to true if using HTTPS
-      };
-
-      res.cookie('token', token, options);
-
       // sending the final response to the client
       return res.status(200).json({
         success: true,
         message: 'Logged in success',
         token,
+        user,
       });
     } catch (error) {
       return res.status(500).json({
