@@ -47,7 +47,7 @@ export const createPost = [
         description,
         postImageUrl: cloudinaryResponse ? cloudinaryResponse.secure_url : null,
         userImageUrl: profileImage,
-        likes: {},
+        likes: [],
         comments: [],
       });
 
@@ -90,6 +90,7 @@ export const getUserPosts = async (req, res) => {
   try {
     const { userId } = req.params;
     const posts = await Post.find({ userId });
+
     return res.status(200).json({
       success: true,
       posts,
@@ -111,33 +112,82 @@ export const likePost = async (req, res) => {
     // userId
     const { userId } = req.body;
 
+    // find user by userId
+    const user = await User.findById({ _id: userId });
+
+    // extract email and profileImage from user
+    const { email, profileImage, firstname, lastname } = user || {};
+    const fullName = firstname + ' ' + lastname;
+
     // find post by postId
     const post = await Post.findById({ _id: postId });
 
-    // check if user liked the post
-    const isLiked = post.likes.get(userId);
+    // find if the user already like the post
+    const isLiked = post.likes.find((like) => like.email === email);
 
-    // if user liked the post, then delete it from the post.likes
-    // else set teh userId (who like it)
+    // if he liked then remove it from likes array
+    // else push the user's userId,email and profileImage to likes array
     if (isLiked) {
-      post.likes.delete(userId);
+      post.likes = post.likes.filter((like) => like.email !== email);
     } else {
-      post.likes.set(userId, true);
+      // Initialize likes field if it's not already
+      if (!post.likes) {
+        post.likes = [];
+      }
+      post.likes.push({ userId, email, profileImage, name: fullName });
     }
 
-    // And finally update the post (liked post) and return the new post
-    const updatedPost = await Post.findByIdAndUpdate(
-      { _id: postId },
-      { likes: post.likes },
-      { new: true }
-    );
+    // Update the post (liked post) and save it
+    await post.save();
 
-    // return the response with the updatedPost
+    // Return the response with the updated post
     return res.status(200).json({
       success: true,
-      updatedPost,
+      updatedPost: post,
     });
   } catch (error) {
+    // return error response
+    return res.status(404).json({
+      success: false,
+      message: error.message,
+    });
+  }
+};
+
+// ############## ADD COMMENT ################
+export const addComment = async (req, res) => {
+  try {
+    // postId
+    const { postId } = req.params;
+    // destructure userId and comment from request-body
+    const { userId, comment } = req.body;
+
+    // find user by userId
+    const user = await User.findById({ _id: userId });
+
+    // extract email and profileImage from user
+    const { firstname, profileImage } = user || {};
+
+    // find post by postId
+    const post = await Post.findById({ _id: postId });
+
+    post.comments.push({
+      postId,
+      whoComment: firstname,
+      comment,
+      profileImage,
+    });
+
+    // save the updated post to db
+    await post.save();
+
+    // Return the response with the updated post
+    return res.status(200).json({
+      success: true,
+      updatedPost: post,
+    });
+  } catch (error) {
+    console.log(error);
     // return error response
     return res.status(404).json({
       success: false,

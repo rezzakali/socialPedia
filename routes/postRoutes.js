@@ -1,5 +1,6 @@
 import { Router } from 'express';
 import {
+  addComment,
   createPost,
   getPosts,
   getUserPosts,
@@ -21,5 +22,8 @@ router.post('/create-post', verifyToken, createPost);
 
 //  ############# LIKE A POST ################
 router.patch('/:postId/like', verifyToken, likePost);
+
+// ############ ADD COMMENT #################
+router.patch('/:postId/add-comment', verifyToken, addComment);
 
 export default router;

@@ -17,8 +17,8 @@ const postSchema = new Schema(
     location: String,
     description: String,
     likes: {
-      type: Map,
-      of: Boolean,
+      type: Array,
+      default: [],
     },
     comments: {
       type: Array,

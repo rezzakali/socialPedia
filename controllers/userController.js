@@ -74,7 +74,7 @@ export const getUserFriends = async (req, res) => {
     );
 
     // return the response with formatted friends
-    return res.status(200).json(formattedFriends);
+    return res.status(200).json({ data: formattedFriends });
   } catch (error) {
     // return error
     return res.status(500).json({
